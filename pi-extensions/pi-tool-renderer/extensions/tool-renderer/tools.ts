@@ -255,6 +255,7 @@ export function registerEdit(pi: ExtensionAPI, agent: any, cwd: string): void {
 		label: "edit",
 		description: original.description,
 		parameters: original.parameters,
+		prepareArguments: original.prepareArguments,
 		async execute(id: string, params: any, signal: AbortSignal | undefined, onUpdate: unknown, context: any) {
 			const effectiveCwd = contextCwd(context, cwd);
 			const targetPath = params?.path ?? params?.file_path;
