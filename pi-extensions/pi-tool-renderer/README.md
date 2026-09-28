@@ -36,6 +36,16 @@ vstack add vanillagreencom/vstack --pi-extension pi-tool-renderer --harness pi -
 
 Restart Pi after installation.
 
+### Personal curated fork
+
+```bash
+pi install git:github.com/giladbarnea/vstack
+```
+
+This fork's root manifest loads only `read`, `bash`, `edit`, `write`, `grep`, `find`, and `ls` renderers, with native-tool grouping support. It imports the same renderer modules as the full package. It does not load global UI patches, generic/MCP rendering, `tool_batch`, or the monorepo's skills and agents.
+
+Settings remain under `vstack.extensionManager.config["@vanillagreen/pi-tool-renderer"]`. Run `pi update git:github.com/giladbarnea/vstack`, then `/reload`, to update the installed code from the fork. Do not also load a separate local copy of these renderers.
+
 ## `tool_batch`
 
 ```json
@@ -57,7 +67,7 @@ If the combined output would exceed Pi's normal tool-result budget, child output
 
 Open `/extensions:settings`; settings appear under the **Tool Renderer** tab.
 
-Project settings in `.pi/settings.json` apply only after Pi marks the workspace trusted; before trust, vstack Pi extensions read user/global settings only.
+Project settings in `.pi/settings.json` apply only after Pi marks the workspace trusted; before trust, vstack Pi extensions read user/global settings only. Glyphs and renderers share a cached settings reader. Changes to a settings file or project trust invalidate the cache.
 
 Glyph style: each package exposes `glyphStyle` (`unicode` default, `ascii` for terminal-safe chrome). `@vanillagreen/pi-tool-renderer.globalGlyphStyleOverride=ascii` forces ASCII chrome across vstack Pi extensions while leaving tool/model/user content unchanged.
 

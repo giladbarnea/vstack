@@ -1,4 +1,4 @@
-import { existsSync, readFileSync } from "node:fs";
+import { existsSync, readFileSync, statSync } from "node:fs";
 import { homedir } from "node:os";
 import { dirname, join, resolve } from "node:path";
 
@@ -56,27 +56,50 @@ function projectSettingsTrusted(settingsPath: string): boolean {
 	return projectTrustRegistry().projectSettings?.get(settingsPath) === true;
 }
 
+/** Root-anchored as `crates/core/src/harness/pi.rs::pi_root_is_absolute_for`
+ * means it, which `isAbsolute` is not: it calls a driveless `\root` absolute
+ * where the renderer does not, putting the two on different roots. Hoisted, so
+ * a circular import cannot reach it inside a temporal dead zone. */
+function rootAnchored(path: string, windows: boolean): boolean { return windows ? /^(?:[A-Za-z]:[\\/]|[\\/]{2}[^\\/]+[\\/][^\\/]+)/.test(path) : path.startsWith("/"); }
 
 function piSettingsPaths(cwd = process.cwd()): string[] {
-	const userDir = resolve(expandHome(process.env.PI_CODING_AGENT_DIR?.trim() || "~/.pi/agent"));
+	const override = expandHome(process.env.PI_CODING_AGENT_DIR?.trim() || "");
+	const userDir = resolve(rootAnchored(override, process.platform === "win32") ? override : expandHome("~/.pi/agent"));
 	const user = join(userDir, "settings.json");
 	const project = projectSettingsPath(cwd);
 	return projectSettingsTrusted(project) ? [user, project] : [user];
 }
 
-export function readVstackConfig(cwd?: string): VstackConfig {
-	const merged: VstackConfig = {};
-	for (const path of piSettingsPaths(cwd)) {
-		if (!existsSync(path)) continue;
+let cachedPackageConfig: { packageId: string; fingerprint: string; merged: Record<string, unknown> } | undefined;
+
+/** Per candidate: path + stat stamp, so two roots can never share a cache entry. */
+function settingsFingerprint(packageId: string, settingsPaths: string[]): string {
+	return JSON.stringify([packageId, ...settingsPaths.map((settingsPath) => {
+		try { const { mtimeMs, size } = statSync(settingsPath); return [settingsPath, mtimeMs, size]; } catch { return [settingsPath, "missing"]; }
+	})]);
+}
+
+export function readPackageConfig(packageId: string, cwd?: string): Record<string, unknown> {
+	const settingsPaths = piSettingsPaths(cwd);
+	const fingerprint = settingsFingerprint(packageId, settingsPaths);
+	if (cachedPackageConfig && cachedPackageConfig.packageId === packageId && cachedPackageConfig.fingerprint === fingerprint) return cachedPackageConfig.merged;
+	const merged: Record<string, unknown> = {};
+	for (const settingsPath of settingsPaths) {
+		if (!existsSync(settingsPath)) continue;
 		try {
-			const parsed = JSON.parse(readFileSync(path, "utf8"));
-			const config = parsed?.vstack?.extensionManager?.config?.[CONFIG_ID];
+			const parsed = JSON.parse(readFileSync(settingsPath, "utf8"));
+			const config = parsed?.vstack?.extensionManager?.config?.[packageId];
 			if (config && typeof config === "object" && !Array.isArray(config)) Object.assign(merged, config);
 		} catch {
 			// Ignore malformed optional manager config.
 		}
 	}
+	cachedPackageConfig = { packageId, fingerprint, merged };
 	return merged;
+}
+
+export function readVstackConfig(cwd?: string): VstackConfig {
+	return readPackageConfig(CONFIG_ID, cwd) as VstackConfig;
 }
 
 export function settingNumber(key: string, fallback: number, cwd?: string): number {

@@ -141,7 +141,7 @@ export function registerRead(pi: ExtensionAPI, agent: any, cwd: string): void {
 		description: original.description,
 		parameters: original.parameters,
 		async execute(id: string, params: any, signal: AbortSignal | undefined, onUpdate: unknown, context: any) {
-			return getBuiltInTool(agent, contextCwd(context, cwd), "read").execute(id, params, signal, onUpdate);
+			return getBuiltInTool(agent, contextCwd(context, cwd), "read").execute(id, params, signal, onUpdate, context);
 		},
 		renderCall(args: any, theme: any, context: any) {
 			return renderPendingCall(readCallText(args ?? {}, theme, context?.cwd ?? cwd), theme, context, cwd);
@@ -180,7 +180,7 @@ export function registerBash(pi: ExtensionAPI, agent: any, cwd: string): void {
 		description: original.description,
 		parameters: original.parameters,
 		async execute(id: string, params: any, signal: AbortSignal | undefined, onUpdate: unknown, context: any) {
-			return getBuiltInTool(agent, contextCwd(context, cwd), "bash").execute(id, params, signal, onUpdate);
+			return getBuiltInTool(agent, contextCwd(context, cwd), "bash").execute(id, params, signal, onUpdate, context);
 		},
 		renderCall(args: any, theme: any, context: any) {
 			markBashStarted(context);
@@ -211,10 +211,11 @@ export function registerBash(pi: ExtensionAPI, agent: any, cwd: string): void {
 			}
 			clearBlink(context);
 			clearBashLiveTailTimer(liveTailState);
-			const exit = commandExit(output);
+			const failed = Boolean(context?.isError || result?.isError);
+			const exit = failed ? commandExit(output) : 0;
 			const count = lineCount(output);
-			const exitLabel = exit === null ? "exit 0" : `exit ${exit}`;
-			let summary = exit !== null && exit !== 0 ? theme.fg("error", exitLabel) : theme.fg("success", exitLabel);
+			const exitLabel = exit === null ? "failed" : `exit ${exit}`;
+			let summary = theme.fg(failed ? "error" : "success", exitLabel);
 			summary += theme.fg("dim", ` · ${count} line${count === 1 ? "" : "s"}`);
 			if (resultTruncated(result)) summary += theme.fg("warning", " · truncated");
 			const mode = bashOutputMode(effectiveCwd);
@@ -260,7 +261,7 @@ export function registerEdit(pi: ExtensionAPI, agent: any, cwd: string): void {
 			const effectiveCwd = contextCwd(context, cwd);
 			const targetPath = params?.path ?? params?.file_path;
 			const before = readTextForDiff(targetPath, effectiveCwd);
-			const result = await getBuiltInTool(agent, effectiveCwd, "edit").execute(id, params, signal, onUpdate);
+			const result = await getBuiltInTool(agent, effectiveCwd, "edit").execute(id, params, signal, onUpdate, context);
 			const after = result?.isError ? before : readTextForDiff(targetPath, effectiveCwd);
 			return attachDiffDetails(result, before, after, typeof targetPath === "string" ? targetPath : undefined);
 		},
@@ -306,7 +307,7 @@ export function registerWrite(pi: ExtensionAPI, agent: any, cwd: string): void {
 			const effectiveCwd = contextCwd(context, cwd);
 			const targetPath = params?.path ?? params?.file_path;
 			const before = readTextForDiff(targetPath, effectiveCwd);
-			const result = await getBuiltInTool(agent, effectiveCwd, "write").execute(id, params, signal, onUpdate);
+			const result = await getBuiltInTool(agent, effectiveCwd, "write").execute(id, params, signal, onUpdate, context);
 			const after = result?.isError ? before : typeof params?.content === "string" ? params.content : readTextForDiff(targetPath, effectiveCwd);
 			return attachDiffDetails(result, before, after, typeof targetPath === "string" ? targetPath : undefined);
 		},
@@ -354,7 +355,7 @@ export function registerReadOnly(pi: ExtensionAPI, agent: any, cwd: string, tool
 		description: original.description,
 		parameters: original.parameters,
 		async execute(id: string, params: any, signal: AbortSignal | undefined, onUpdate: unknown, context: any) {
-			return getBuiltInTool(agent, contextCwd(context, cwd), toolName).execute(id, params, signal, onUpdate);
+			return getBuiltInTool(agent, contextCwd(context, cwd), toolName).execute(id, params, signal, onUpdate, context);
 		},
 		renderCall(args: any, theme: any, context: any) {
 			return renderPendingCall(readOnlyCallText(toolName, args ?? {}, theme, context?.cwd ?? cwd), theme, context, cwd);
