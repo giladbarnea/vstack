@@ -162,4 +162,6 @@ Glyph style: each package exposes `glyphStyle` (`unicode` default, `ascii` for t
 
 ## Notes
 
-This package mostly changes rendering, not tool execution. `tool_batch` is one tool result, so it caps combined child output if needed; individual built-in tools still apply their own truncation first.
+This package mostly changes rendering, not tool execution. Direct and batched calls preserve Pi's execution context and session metadata. Bash summaries use Pi's error state, including grouped calls.
+
+`tool_batch` is one tool result, so it caps combined child output if needed; individual built-in tools still apply their own truncation first.

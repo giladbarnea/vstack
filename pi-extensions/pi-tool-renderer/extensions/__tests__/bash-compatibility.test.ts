@@ -2,6 +2,8 @@ import { beforeAll, expect, test } from "bun:test";
 import * as agent from "@earendil-works/pi-coding-agent";
 import type { ExtensionAPI, ExtensionContext, Theme, ToolDefinition } from "@earendil-works/pi-coding-agent";
 import { registerBash } from "../tool-renderer/tools.js";
+import { registerToolBatch } from "../tool-renderer/batch.js";
+import { renderStackItemText } from "../tool-renderer/stack.js";
 
 const definitions = new Map<string, ToolDefinition>();
 const context = {
@@ -14,6 +16,7 @@ let bash: ToolDefinition;
 beforeAll(() => {
 	registerBash({ registerTool: (definition: ToolDefinition) => definitions.set(definition.name, definition) } as ExtensionAPI, agent, context.cwd);
 	bash = definitions.get("bash")!;
+	registerToolBatch({ registerTool: (definition: ToolDefinition) => definitions.set(definition.name, definition) } as ExtensionAPI, agent, context.cwd);
 });
 
 function render(text: string, isError: boolean): string {
@@ -30,6 +33,28 @@ test("Bash receives current Pi session metadata", async () => {
 	const result = await bash.execute("metadata", { command: 'printf "%s" "$PI_SESSION_ID"' }, undefined, undefined, context);
 	expect(result.content).toEqual([{ type: "text", text: "renderer-session" }]);
 });
+
+test("batched Bash receives current Pi session metadata", async () => {
+	const result = await definitions.get("tool_batch")!.execute("batch-metadata", {
+		calls: [{ tool: "bash", args: { command: 'printf "%s" "$PI_SESSION_ID"' } }],
+	}, undefined, undefined, context);
+	const details = result.details as { failed: number; items: Array<{ resultText: string }> };
+	expect(details.failed).toBe(0);
+	expect(details.items[0].resultText).toBe("renderer-session");
+});
+
+for (const [isError, output, expected] of [
+	[false, "Command exited with code 99", "exit 0"],
+	[true, "Command exited with code 23", "failed"],
+] as const) {
+	test(`grouped Bash respects isError=${isError} rather than output text`, () => {
+		const rendered = renderStackItemText({
+			args: { command: "probe" }, batchId: "batch", id: "call", isError,
+			resultText: output, status: isError ? "error" : "done", toolName: "bash", truncated: false,
+		}, theme, false, context.cwd);
+		expect(rendered).toContain(expected);
+	});
+}
 
 test("a failed command displays its actual exit status", async () => {
 	let failure: unknown;
