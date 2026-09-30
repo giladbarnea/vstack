@@ -1,5 +1,5 @@
 {
-  "name": "@giladbarnea/vstack-fork-adapted-tool-renderers",
+  "name": "@vanillagreen/pi-tool-renderer",
   "private": true,
   "description": "Selected V-Stack tool renderers for personal Pi use",
   "pi": {
@@ -15,7 +15,76 @@
     "@earendil-works/pi-tui": "*"
   },
   "peerDependenciesMeta": {
-    "@earendil-works/pi-coding-agent": { "optional": true },
-    "@earendil-works/pi-tui": { "optional": true }
+    "@earendil-works/pi-coding-agent": {
+      "optional": true
+    },
+    "@earendil-works/pi-tui": {
+      "optional": true
+    }
+  },
+  "vstack": {
+    "extensionManager": {
+      "displayName": "Tool Renderer",
+      "settings": [
+        {
+          "key": "enabled",
+          "label": "Enable compact renderers",
+          "description": "Override built-in read/bash/search renderers while delegating execution to Pi originals. Edit/write renderers remain disabled unless enabled separately.",
+          "type": "boolean",
+          "default": true,
+          "category": "General",
+          "apply": "reload",
+          "requiresReload": true
+        },
+        {
+          "key": "stackToolCalls",
+          "label": "Stack separate native tool calls",
+          "description": "Legacy renderer for consecutive native read/bash/search tool calls. Disabled by default because Pi still reserves hidden sibling layout space; prefer tool_batch for clean combined output.",
+          "type": "boolean",
+          "default": false,
+          "category": "General",
+          "apply": "reload",
+          "requiresReload": true
+        },
+        {
+          "key": "stackChildDisplay",
+          "label": "Stack child display",
+          "description": "How stacked child tool rows are displayed: rows = separate compact rows; headline = hidden rows until ctrl+o to expand; anchor-list = list shown in the headline row by default.",
+          "type": "enum",
+          "enumValues": [
+            "rows",
+            "headline",
+            "anchor-list"
+          ],
+          "default": "rows",
+          "category": "General",
+          "apply": "live"
+        },
+        {
+          "key": "renderMutationTools",
+          "label": "Render edits/writes compactly",
+          "description": "Override Pi's built-in edit/write renderers with compact rich diff summaries/previews. Disabled by default so standard diff/edit rendering is preserved.",
+          "type": "boolean",
+          "default": false,
+          "category": "Mutation",
+          "apply": "reload",
+          "requiresReload": true
+        },
+        {
+          "key": "showReadImages",
+          "label": "Read image display",
+          "description": "Image results when Pi terminal.showImages is false: off hides them, always shows them in read output, and on shows them only while tools are expanded. Changes apply immediately. Floating overlays temporarily hide images while preserving their layout space.",
+          "type": "enum",
+          "enumValues": [
+            "off",
+            "always",
+            "on"
+          ],
+          "default": "off",
+          "category": "Read",
+          "apply": "live"
+        }
+      ]
+    }
   }
 }

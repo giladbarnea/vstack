@@ -20,7 +20,8 @@ test("installing the fork exposes only the selected tool renderers", async () =>
 		const resources = loader.getExtensions();
 		expect(resources.errors).toEqual([]);
 		expect(resources.extensions).toHaveLength(1);
-		expect([...resources.extensions[0].tools.keys()].sort()).toEqual(["bash", "edit", "find", "grep", "ls", "read", "write"]);
+		expect([...resources.extensions[0].tools.keys()].sort()).toEqual(["bash", "find", "grep", "ls", "read"]);
+		expect([...resources.extensions[0].commands.keys()]).toEqual(["extensions:settings"]);
 		expect([...resources.extensions[0].handlers.keys()].sort()).toEqual(["agent_end", "agent_start", "session_shutdown", "session_start", "tool_execution_end", "tool_execution_start"]);
 		expect(loader.getSkills().skills.filter((skill) => skill.filePath.startsWith(`${repository}/`))).toEqual([]);
 		expect(loader.getPrompts().prompts).toEqual([]);

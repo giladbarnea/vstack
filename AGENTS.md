@@ -235,6 +235,8 @@ Pi core loads exactly one `APPEND_SYSTEM.md`: `<cwd>/.pi/APPEND_SYSTEM.md`, fall
 
 ## Pi Extension Development Workflow
 
+For personal renderer fork work, first read [FORK.md](pi-extensions/pi-tool-renderer/FORK.md). Follow its upstream-alignment and undocumented-drift checks before implementation.
+
 For any `pi-extensions/**` or Pi package behavior change:
 1. **Validate before finishing.** Confirm new code is reachable from where it's invoked. Cross-extension calls: `pi.getCommands()` is metadata only; bridge via `globalThis[Symbol.for("vstack.pi.<topic>")]` (see modal-lock, thinking-timer, question-service). If you can't live-test in Pi, say so.
 2. **Commit intended Pi package changes** unless told not to. Stage only intended files; mention unrelated dirty files. If signing fails, retry with `--no-gpg-sign`.

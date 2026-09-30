@@ -42,7 +42,9 @@ Restart Pi after installation.
 pi install git:github.com/giladbarnea/vstack
 ```
 
-This fork's root manifest loads only `read`, `bash`, `edit`, `write`, `grep`, `find`, and `ls` renderers, with native-tool grouping support. It imports the same renderer modules as the full package. It does not load global UI patches, generic/MCP rendering, `tool_batch`, or the monorepo's skills and agents.
+This fork's root manifest loads `read`, `bash`, `grep`, `find`, and `ls` renderers, with native-tool grouping support. Edit/write use Pi's native renderers by default. It imports the same renderer modules as the full package. It does not load global UI patches, generic/MCP rendering, `tool_batch`, or the monorepo's skills and agents.
+
+Open `/extensions:settings`, enable **Render edits/writes compactly**, then run `/reload` to opt in. This reuses upstream's settings dialog, not Pi's built-in `/settings`. The dialog also exposes renderer enable/disable, grouping, child display, and image display. It stays available when renderers are disabled. The fork does not load the package browser.
 
 The fork also renders the personal `read_many_files` tool as a grouped file list, when that tool is loaded. The heading has a bold `● Read` label. File rows show linked paths and line counts, without repeated labels. Read output settings apply to its previews and images. [Fork policy](FORK.md) records this adapter as temporary, unwanted drift.
 
