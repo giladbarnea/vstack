@@ -4,7 +4,7 @@ import type { Component } from "@earendil-works/pi-tui";
 import { renderReadImages } from "./tool-renderer/images.js";
 import { readOutputMode, settingNumber } from "./tool-renderer/settings.js";
 import { stackPrefix, treeConnector } from "./tool-renderer/theme.js";
-import { clearBlink, makeEmpty, makeTruncatedLines, pendingStatusPrefix, plural, preview, readCallText, splitTerminalLines } from "./tool-renderer/text.js";
+import { clearBlink, makeEmpty, makeTruncatedLines, pendingStatusPrefix, plural, preview, renderToolPathText, splitTerminalLines } from "./tool-renderer/text.js";
 
 type ReadManyFilesArguments = { paths?: string[] };
 type ReadManyFilesContext = ToolRenderContext<Record<string, unknown>, ReadManyFilesArguments>;
@@ -43,13 +43,14 @@ function renderResult(result: ReadManyFilesResult, options: ToolRenderResultOpti
 	const hiddenPaths = new Set(details?.hiddenPaths);
 	const failedIndexes = new Set(details?.failedIndexes);
 	const failed = context.isError || failedIndexes.size > 0;
-	let text = `${stackPrefix(theme, cwd)}Read ${plural(paths.length, "file")}${theme.fg(failed ? "error" : "success", failed ? " · failed" : " · done")}`;
+	const heading = theme.bold(`${stackPrefix(theme, cwd)}Read`);
+	let text = `${heading} ${plural(paths.length, "file")}${theme.fg(failed ? "error" : "success", failed ? " · failed" : " · done")}`;
 	paths.forEach((path, index) => {
 		const hidden = details?.hiddenIndexes !== undefined ? hiddenIndexes.has(index) : hiddenPaths.has(path);
 		const status = context.isError || failedIndexes.has(index)
 			? theme.fg("error", "failed")
 			: hidden ? theme.fg("muted", "unchanged") : theme.fg("success", plural(details?.fileLineCounts?.[index] ?? 0, "line"));
-		text += `\n${treeConnector(theme, index === paths.length - 1 ? "└" : "├", cwd)}${readCallText({ path: path.replace(/^@/, "") }, theme, cwd)}${theme.fg("dim", " · ")}${status}`;
+		text += `\n${treeConnector(theme, index === paths.length - 1 ? "└" : "├", cwd)}${renderToolPathText(path.replace(/^@/, ""), theme, cwd)}${theme.fg("dim", " · ")}${status}`;
 	});
 	if (expanded && mode === "preview") {
 		const content = result.content.filter((part) => part.type === "text").map((part) => part.text).join("\n\n");

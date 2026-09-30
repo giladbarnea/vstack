@@ -14,6 +14,6 @@ Global UI patches, generic/MCP rendering, `tool_batch`, and the monorepo's skill
 
 The personal tool requests call/result components through Pi's shared event bus, on `gilad:read-many-files:render`. The adapter uses upstream tree rows, path links, preview limits, image rendering, and settings. It does not register or execute the tool. Without the adapter, the personal tool uses its existing renderer.
 
-## Update the installed fork through Pi
+## Load one fork copy
 
-The installed package source is `git:github.com/giladbarnea/vstack`. After publishing an approved change, run `pi update git:github.com/giladbarnea/vstack`, then `/reload`. Do not also load a separate local renderer copy.
+The personal installation loads `~/dev/vstack` as a local Pi package. After changing this checkout, run `/reload`. Do not also load the GitHub package. GitHub installs use the update steps in [README.md](README.md#personal-curated-fork).

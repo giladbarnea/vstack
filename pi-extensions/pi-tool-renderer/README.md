@@ -44,7 +44,7 @@ pi install git:github.com/giladbarnea/vstack
 
 This fork's root manifest loads only `read`, `bash`, `edit`, `write`, `grep`, `find`, and `ls` renderers, with native-tool grouping support. It imports the same renderer modules as the full package. It does not load global UI patches, generic/MCP rendering, `tool_batch`, or the monorepo's skills and agents.
 
-The fork also renders the personal `read_many_files` tool as a grouped file list, when that tool is loaded. Read output settings apply to its previews and images. [Fork policy](FORK.md) records this adapter as temporary, unwanted drift.
+The fork also renders the personal `read_many_files` tool as a grouped file list, when that tool is loaded. The heading has a bold `● Read` label. File rows show linked paths and line counts, without repeated labels. Read output settings apply to its previews and images. [Fork policy](FORK.md) records this adapter as temporary, unwanted drift.
 
 Settings remain under `vstack.extensionManager.config["@vanillagreen/pi-tool-renderer"]`. Run `pi update git:github.com/giladbarnea/vstack`, then `/reload`, to update the installed code from the fork. Do not also load a separate local copy of these renderers.
 

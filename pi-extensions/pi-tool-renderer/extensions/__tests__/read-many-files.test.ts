@@ -90,9 +90,11 @@ test("curated fork renders multiple files like grouped native reads", async () =
 	const lines = request.component!.render(120);
 	expect(lines.map(stripAnsi)).toEqual([
 		"● Read 2 files · done",
-		"  ├─ Read a.ts · 1 line",
-		"  └─ Read b.ts · 2 lines",
+		"  ├─ a.ts · 1 line",
+		"  └─ b.ts · 2 lines",
 	]);
+	expect(lines[0]).toContain("\x1b[1m● Read\x1b[22m");
+	expect(lines[1]).not.toContain("\x1b[1m");
 	expect(lines[1]).toContain(`\x1b]8;;file://${cwd}/a.ts`);
 	for (const width of [20, 40, 80]) {
 		expect(request.component!.render(width).every((line) => visibleWidth(line) <= width)).toBe(true);
@@ -103,8 +105,8 @@ test("unchanged files use index metadata so duplicate paths stay distinct", asyn
 	const { render } = await fixture();
 	expect(render({ paths: ["a.ts", "a.ts"], fileLineCounts: [4, 4], hiddenIndexes: [1], hiddenPaths: ["a.ts"] })).toEqual([
 		"● Read 2 files · done",
-		"  ├─ Read a.ts · 4 lines",
-		"  └─ Read a.ts · unchanged",
+		"  ├─ a.ts · 4 lines",
+		"  └─ a.ts · unchanged",
 	]);
 });
 
@@ -112,8 +114,8 @@ test("failed files do not report success or zero lines", async () => {
 	const { render } = await fixture();
 	expect(render({ paths: ["a.ts", "missing.ts"], fileLineCounts: [1, 0], failedIndexes: [1] })).toEqual([
 		"● Read 2 files · failed",
-		"  ├─ Read a.ts · 1 line",
-		"  └─ Read missing.ts · failed",
+		"  ├─ a.ts · 1 line",
+		"  └─ missing.ts · failed",
 	]);
 });
 
@@ -121,7 +123,7 @@ test("tool errors mark file rows as failed", async () => {
 	const { context, render } = await fixture();
 	context.isError = true;
 	expect(render({ paths: ["a.ts"], fileLineCounts: [0] })).toEqual([
-		"● Read 1 file · failed", "  └─ Read a.ts · failed",
+		"● Read 1 file · failed", "  └─ a.ts · failed",
 	]);
 });
 
