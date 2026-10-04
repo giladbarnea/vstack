@@ -23,13 +23,13 @@ export default async function vstackForkAdaptedToolRenderers(pi: ExtensionAPI): 
 
 	const agent = await import("@earendil-works/pi-coding-agent");
 	const cwd = process.cwd();
-	registerRead(pi, agent, cwd);
-	registerBash(pi, agent, cwd);
+	registerRead(pi, cwd);
+	registerBash(pi, cwd);
 	if (settingBoolean("renderMutationTools", false, cwd)) {
 		registerEdit(pi, agent, cwd);
 		registerWrite(pi, agent, cwd);
 	}
-	registerReadOnly(pi, agent, cwd, "grep");
-	registerReadOnly(pi, agent, cwd, "find");
-	registerReadOnly(pi, agent, cwd, "ls");
+	registerReadOnly(pi, cwd, "grep");
+	registerReadOnly(pi, cwd, "find");
+	registerReadOnly(pi, cwd, "ls");
 }

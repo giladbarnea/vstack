@@ -1,6 +1,6 @@
 import { beforeAll, expect, test } from "bun:test";
 import * as agent from "@earendil-works/pi-coding-agent";
-import type { ExtensionAPI, ExtensionContext, Theme, ToolDefinition } from "@earendil-works/pi-coding-agent";
+import type { ExtensionAPI, ExtensionContext, Theme, ToolDefinition, ToolRendererResolver, ToolRenderers } from "@earendil-works/pi-coding-agent";
 import { registerBash } from "../tool-renderer/tools.js";
 import { registerToolBatch } from "../tool-renderer/batch.js";
 import { renderStackItemText } from "../tool-renderer/stack.js";
@@ -11,16 +11,19 @@ const context = {
 	sessionManager: { getSessionId: () => "renderer-session", getSessionFile: () => undefined },
 } as ExtensionContext;
 const theme = { fg: (_color: string, text: string) => text, bold: (text: string) => text } as Theme;
-let bash: ToolDefinition;
+let bash: ReturnType<typeof agent.createBashTool>;
+let renderers: ToolRenderers;
 
 beforeAll(() => {
-	registerBash({ registerTool: (definition: ToolDefinition) => definitions.set(definition.name, definition) } as ExtensionAPI, agent, context.cwd);
-	bash = definitions.get("bash")!;
+	registerBash({ registerToolRenderer(resolver: ToolRendererResolver) {
+		renderers = resolver("bash", () => undefined)!;
+	} } as ExtensionAPI, context.cwd);
+	bash = agent.createBashTool(context.cwd);
 	registerToolBatch({ registerTool: (definition: ToolDefinition) => definitions.set(definition.name, definition) } as ExtensionAPI, agent, context.cwd);
 });
 
 function render(text: string, isError: boolean): string {
-	return bash.renderResult!(
+	return renderers.renderResult!(
 		{ content: [{ type: "text", text }], details: undefined },
 		{ expanded: false, isPartial: false },
 		theme,
@@ -57,14 +60,9 @@ for (const [isError, output, expected] of [
 }
 
 test("a failed command displays its actual exit status", async () => {
-	let failure: unknown;
-	try {
-		await bash.execute("failure", { command: "exit 23" }, undefined, undefined, context);
-	} catch (error) {
-		failure = error;
-	}
-	expect(failure).toBeInstanceOf(Error);
-	const rendered = render((failure as Error).message, true);
+	const result = await bash.execute("failure", { command: "exit 23" }, undefined, undefined, context);
+	const output = result.content.filter((block) => block.type === "text").map((block) => block.text).join("\n");
+	const rendered = render(output, true);
 	expect(rendered).toContain("exit 23");
 	expect(rendered).not.toContain("exit 0");
 });

@@ -1,4 +1,4 @@
-import { type ExtensionAPI } from "@earendil-works/pi-coding-agent";
+import { type ExtensionAPI, type ToolRenderers } from "@earendil-works/pi-coding-agent";
 import { resolve } from "node:path";
 
 import {
@@ -131,18 +131,9 @@ function renderBashTail(output: string, limit: number, theme: any, cwd?: string)
 	return tailLines.map((line) => theme.fg("dim", line)).join("\n");
 }
 
-export function registerRead(pi: ExtensionAPI, agent: any, cwd: string): void {
-	const original = getBuiltInTool(agent, cwd, "read");
-	if (!original) return;
-	pi.registerTool({
+export function registerRead(pi: ExtensionAPI, cwd: string): void {
+	const renderers: ToolRenderers = {
 		renderShell: "self",
-		name: "read",
-		label: "read",
-		description: original.description,
-		parameters: original.parameters,
-		async execute(id: string, params: any, signal: AbortSignal | undefined, onUpdate: unknown, context: any) {
-			return getBuiltInTool(agent, contextCwd(context, cwd), "read").execute(id, params, signal, onUpdate, context);
-		},
 		renderCall(args: any, theme: any, context: any) {
 			return renderPendingCall(readCallText(args ?? {}, theme, context?.cwd ?? cwd), theme, context, cwd);
 		},
@@ -167,21 +158,13 @@ export function registerRead(pi: ExtensionAPI, agent: any, cwd: string): void {
 			}
 			return renderReadImages(makeTruncatedLines(text), result, expanded, theme, context, cwd);
 		},
-	});
+	};
+	pi.registerToolRenderer((toolName, next) => toolName === "read" ? renderers : next());
 }
 
-export function registerBash(pi: ExtensionAPI, agent: any, cwd: string): void {
-	const original = getBuiltInTool(agent, cwd, "bash");
-	if (!original) return;
-	pi.registerTool({
+export function registerBash(pi: ExtensionAPI, cwd: string): void {
+	const renderers: ToolRenderers = {
 		renderShell: "self",
-		name: "bash",
-		label: "bash",
-		description: original.description,
-		parameters: original.parameters,
-		async execute(id: string, params: any, signal: AbortSignal | undefined, onUpdate: unknown, context: any) {
-			return getBuiltInTool(agent, contextCwd(context, cwd), "bash").execute(id, params, signal, onUpdate, context);
-		},
 		renderCall(args: any, theme: any, context: any) {
 			markBashStarted(context);
 			return renderPendingCall(bashCallText(args ?? {}, theme, context?.cwd ?? cwd), theme, context, cwd);
@@ -244,7 +227,8 @@ export function registerBash(pi: ExtensionAPI, agent: any, cwd: string): void {
 			}
 			return makeTruncatedLines(text);
 		},
-	});
+	};
+	pi.registerToolRenderer((toolName, next) => toolName === "bash" ? renderers : next());
 }
 
 export function registerEdit(pi: ExtensionAPI, agent: any, cwd: string): void {
@@ -345,18 +329,9 @@ export function registerWrite(pi: ExtensionAPI, agent: any, cwd: string): void {
 	});
 }
 
-export function registerReadOnly(pi: ExtensionAPI, agent: any, cwd: string, toolName: "grep" | "find" | "ls"): void {
-	const original = getBuiltInTool(agent, cwd, toolName);
-	if (!original) return;
-	pi.registerTool({
+export function registerReadOnly(pi: ExtensionAPI, cwd: string, toolName: "grep" | "find" | "ls"): void {
+	const renderers: ToolRenderers = {
 		renderShell: "self",
-		name: toolName,
-		label: toolName,
-		description: original.description,
-		parameters: original.parameters,
-		async execute(id: string, params: any, signal: AbortSignal | undefined, onUpdate: unknown, context: any) {
-			return getBuiltInTool(agent, contextCwd(context, cwd), toolName).execute(id, params, signal, onUpdate, context);
-		},
 		renderCall(args: any, theme: any, context: any) {
 			return renderPendingCall(readOnlyCallText(toolName, args ?? {}, theme, context?.cwd ?? cwd), theme, context, cwd);
 		},
@@ -391,6 +366,7 @@ export function registerReadOnly(pi: ExtensionAPI, agent: any, cwd: string, tool
 			}
 			return makeTruncatedLines(text);
 		},
-	});
+	};
+	pi.registerToolRenderer((name, next) => name === toolName ? renderers : next());
 }
 

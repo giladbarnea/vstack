@@ -46,14 +46,14 @@ export default async function toolRenderer(pi: ExtensionAPI): Promise<void> {
 	installCustomMessageSpacingPatch(pi, (agent as any).CustomMessageComponent);
 	installSkillInvocationRenderer(pi, (agent as any).SkillInvocationMessageComponent);
 	const cwd = process.cwd();
-	registerRead(pi, agent, cwd);
-	registerBash(pi, agent, cwd);
+	registerRead(pi, cwd);
+	registerBash(pi, cwd);
 	if (settingBoolean("renderMutationTools", false, cwd)) {
 		registerEdit(pi, agent, cwd);
 		registerWrite(pi, agent, cwd);
 	}
-	registerReadOnly(pi, agent, cwd, "grep");
-	registerReadOnly(pi, agent, cwd, "find");
-	registerReadOnly(pi, agent, cwd, "ls");
+	registerReadOnly(pi, cwd, "grep");
+	registerReadOnly(pi, cwd, "find");
+	registerReadOnly(pi, cwd, "ls");
 	if (settingBoolean("registerBatchTool", true, cwd)) registerToolBatch(pi, agent, cwd);
 }

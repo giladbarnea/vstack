@@ -1,8 +1,9 @@
-import { afterEach, describe, expect, test } from "bun:test";
+import { afterEach, beforeEach, describe, expect, test } from "bun:test";
 import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 
+import type { ExtensionAPI, ToolRendererResolver, ToolRenderers } from "@earendil-works/pi-coding-agent";
 import { resetCapabilitiesCache, setCapabilities } from "@earendil-works/pi-tui";
 
 import {
@@ -18,8 +19,17 @@ const createdDirs: string[] = [];
 const imageData = "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII=";
 
 type ReadImageSetting = "off" | "always" | "on" | boolean;
+const originalAgentDir = process.env.PI_CODING_AGENT_DIR;
+
+beforeEach(() => {
+	const directory = mkdtempSync(join(tmpdir(), "pi-tool-renderer-image-settings-"));
+	createdDirs.push(directory);
+	process.env.PI_CODING_AGENT_DIR = directory;
+});
 
 afterEach(() => {
+	if (originalAgentDir === undefined) delete process.env.PI_CODING_AGENT_DIR;
+	else process.env.PI_CODING_AGENT_DIR = originalAgentDir;
 	resetCapabilitiesCache();
 	clearTrackedToolExecutionComponents();
 	for (const dir of createdDirs.splice(0)) rmSync(dir, { recursive: true, force: true });
@@ -53,22 +63,14 @@ function writeImageMode(cwd: string, showReadImages: ReadImageSetting): void {
 	writeSettings(cwd, { showReadImages });
 }
 
-function readRenderer(cwd: string): any {
-	let definition: any;
-	const pi = {
-		registerTool(tool: any) {
-			definition = tool;
+function readRenderer(cwd: string): ToolRenderers {
+	let renderers: ToolRenderers | undefined;
+	registerRead({
+		registerToolRenderer(resolver: ToolRendererResolver) {
+			renderers = resolver("read", () => undefined);
 		},
-	};
-	const agent = {
-		createReadTool: () => ({
-			description: "read",
-			parameters: {},
-			execute: async () => ({ content: [] }),
-		}),
-	};
-	registerRead(pi as any, agent, cwd);
-	return definition;
+	} as ExtensionAPI, cwd);
+	return renderers!;
 }
 
 function renderImageResult(

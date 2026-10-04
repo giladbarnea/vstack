@@ -11,7 +11,7 @@
     "themes": []
   },
   "peerDependencies": {
-    "@earendil-works/pi-coding-agent": "*",
+    "@earendil-works/pi-coding-agent": ">=1.0.2",
     "@earendil-works/pi-tui": "*"
   },
   "peerDependenciesMeta": {
@@ -29,7 +29,7 @@
         {
           "key": "enabled",
           "label": "Enable compact renderers",
-          "description": "Override built-in read/bash/search renderers while delegating execution to Pi originals. Edit/write renderers remain disabled unless enabled separately.",
+          "description": "Change read/bash/search display without replacing their tools. Edit/write renderers remain disabled unless enabled separately.",
           "type": "boolean",
           "default": true,
           "category": "General",

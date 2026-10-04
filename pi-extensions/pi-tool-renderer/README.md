@@ -3,7 +3,7 @@
 ![tool_batch composite result with Read/grep/Bash rows](https://raw.githubusercontent.com/vanillagreencom/vstack/main/pi-extensions/pi-tool-renderer/assets/tool-batch.png)
 ![Edit tool with side-by-side diff renderer](https://raw.githubusercontent.com/vanillagreencom/vstack/main/pi-extensions/pi-tool-renderer/assets/edit-diff.png)
 
-Compact renderers for Pi tools. Optional `tool_batch` composite tool. Optional rich diff UI for edits, writes, and bash patches.
+Compact renderers for Pi 1.0.2 or newer. Optional `tool_batch` composite tool. Optional rich diff UI for edits, writes, and bash patches.
 
 ## Highlights
 
@@ -43,6 +43,8 @@ pi install git:github.com/giladbarnea/vstack
 ```
 
 This fork's root manifest loads `read`, `bash`, `grep`, `find`, and `ls` renderers, with native-tool grouping support. Edit/write use Pi's native renderers by default. It imports the same renderer modules as the full package. It does not load global UI patches, generic/MCP rendering, `tool_batch`, or the monorepo's skills and agents.
+
+The five renderers change display only. Other extensions keep their tool execution, parameters, and result formats, regardless of package order.
 
 Open `/extensions:settings`, enable **Render edits/writes compactly**, then run `/reload` to opt in. This reuses upstream's settings dialog, not Pi's built-in `/settings`. The dialog also exposes renderer enable/disable, grouping, child display, and image display. It stays available when renderers are disabled. The fork does not load the package browser.
 

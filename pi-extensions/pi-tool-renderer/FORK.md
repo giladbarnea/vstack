@@ -12,6 +12,8 @@ Global UI patches, generic/MCP rendering, `tool_batch`, and the monorepo's skill
 
 Renderer activation follows upstream: `enabled` defaults to true, and `renderMutationTools` defaults to false. The dialog remains available when renderers are disabled. Do not enable edit/write renderers unconditionally.
 
+Read, Bash, grep, find, and ls use Pi 1.0.2 native `registerToolRenderer` resolvers. They do not register or execute tools. Optional edit/write wrappers still collect diff metadata.
+
 ## 2. Remove unfortunate necessities when another solution exists
 
 `vstack-fork-read-many-files.ts` is necessary but unwanted drift. VStack has no protocol for a personal tool to register its renderer. Keep this adapter outside upstream renderer modules. Remove it as soon as another solution lets the personal tool own its renderer while using VStack's style.
@@ -22,9 +24,9 @@ The personal tool requests components through Pi's shared event bus, on `gilad:r
 
 Being behind upstream normally means a rebase has not happened yet, not that older behavior is preferred. Before changing this fork, fetch upstream, compare the selected code, and assess rebasing. Prefer alignment before feature work. If alignment needs a larger migration, explain that decision before proceeding. Already-merged upstream fixes are not personal drift.
 
-Last checked on 2026-09-30 against `upstream/main` at `fb05f185`. Upstream moved to Kendex and imported the catalog with unrelated Git history. A full rebase replaces the repository base and needs a settings-namespace migration. The current fork still uses `vstack.extensionManager.config`; current upstream uses `kendex.extensionManager.config`.
+Last checked on 2026-10-04 against `upstream/main` at `18c27530`. Upstream moved to Kendex and imported the catalog with unrelated Git history. A full rebase replaces the repository base and needs a settings-namespace migration. The current fork still uses `vstack.extensionManager.config`; current upstream uses `kendex.extensionManager.config`.
 
-Pending selected-code updates include the newer settings reader (`6948c0f3`), broader tool-contract preservation (`143beaa3`), and bounded grouped-call retention (`fb55afe5`). These are update gaps, not intentional product drift. Unselected upstream features do not belong in this backlog.
+Pending selected-code updates include the newer settings reader (`6948c0f3`), tool-contract preservation for optional edit/write wrappers (`143beaa3`), and bounded grouped-call retention (`fb55afe5`). Native read/Bash/search renderers no longer replace tool contracts. These remaining updates are gaps, not intentional product drift. Unselected upstream features do not belong in this backlog.
 
 ## 4. Suspect undocumented drift is unintentional
 

@@ -53,9 +53,7 @@ test("disabled renderers leave the settings command available for recovery", asy
 
 test("edit and write wrappers are registered only after explicit opt-in", async () => {
 	const { loader } = await load({ renderMutationTools: true });
-	expect([...loader.getExtensions().extensions[0].tools.keys()].sort()).toEqual([
-		"bash", "edit", "find", "grep", "ls", "read", "write",
-	]);
+	expect([...loader.getExtensions().extensions[0].tools.keys()].sort()).toEqual(["edit", "write"]);
 });
 
 test("the curated settings use upstream metadata and the renderer's existing config identity", () => {
@@ -103,9 +101,7 @@ test("the real settings dialog saves opt-in under the renderer config and reload
 		expect(saved.theme).toBe("dark");
 		expect(notifications.some((message) => message.includes("/reload"))).toBe(true);
 		await loader.reload();
-		expect([...loader.getExtensions().extensions[0].tools.keys()].sort()).toEqual([
-			"bash", "edit", "find", "grep", "ls", "read", "write",
-		]);
+		expect([...loader.getExtensions().extensions[0].tools.keys()].sort()).toEqual(["edit", "write"]);
 	} finally {
 		session.dispose();
 	}
