@@ -303,7 +303,7 @@ export function renderToolPathText(rawPath: unknown, theme: any, cwd?: string, o
 }
 
 export function readCallText(args: any, theme: any, cwd?: string, hyperlinks?: boolean): string {
-	const range = args?.offset || args?.limit ? `:${args.offset ?? 1}${args.limit ? `-${Number(args.offset ?? 1) + Number(args.limit) - 1}` : ""}` : "";
+	const range = !args?.forceFull && (args?.offset || args?.limit) ? `:${args.offset ?? 1}${args.limit ? `-${Number(args.offset ?? 1) + Number(args.limit) - 1}` : ""}` : "";
 	return `${toolLabel(theme, "Read ")}${renderToolPathText(args?.path ?? args?.file_path ?? "", theme, cwd, undefined, hyperlinks)}${range ? theme.fg("accent", range) : ""}`;
 }
 

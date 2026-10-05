@@ -12,7 +12,7 @@ Global UI patches, generic/MCP rendering, `tool_batch`, and the monorepo's skill
 
 Renderer activation follows upstream: `enabled` defaults to true, and `renderMutationTools` defaults to false. The dialog remains available when renderers are disabled. Do not enable edit/write renderers unconditionally.
 
-Read, Bash, grep, find, and ls use Pi 1.0.2 native `registerToolRenderer` resolvers. They do not register or execute tools. Optional edit/write wrappers still collect diff metadata.
+Read, Bash, grep, find, and ls use Pi 1.0.2 native `registerToolRenderer` resolvers. They do not register or execute tools. Read labels omit ignored ranges when the tool owner supports `forceFull`. Optional edit/write wrappers still collect diff metadata.
 
 ## 2. Remove unfortunate necessities when another solution exists
 

@@ -43,6 +43,12 @@ describe("file path hyperlinks", () => {
 		expect(stripAnsi(rendered)).toContain("Read README.md:2-4");
 	});
 
+	test("readCallText omits ignored ranges when forceFull is true", () => {
+		const rendered = readCallText({ path: "README.md", offset: 999999, limit: 1, forceFull: true }, theme, tmpdir(), true);
+
+		expect(stripAnsi(rendered)).toBe("Read README.md");
+	});
+
 	test("ls call text links its target path", () => {
 		const cwd = mkdtempSync(join(tmpdir(), "pi-tool-renderer-links-"));
 		const rendered = readOnlyCallText("ls", { path: "pi-extensions" }, theme, cwd, true);
