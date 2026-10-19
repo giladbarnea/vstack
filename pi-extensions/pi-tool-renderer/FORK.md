@@ -1,5 +1,7 @@
 # Keep the curated fork close to upstream
 
+The [root fork guide](../../FORK.md) defines this fork's purpose, responsibility boundary, and upstream relationship.
+
 This policy classifies differences in the selected Pi renderer package. The fork started as an edit/write renderer extraction. The earlier policy lived in `~/.pi/agent/extensions/rich-tool-diff/FORK.md`, deleted in that repository's commit `0400c37`.
 
 ## 1. Preserve intentional product and behavior drift

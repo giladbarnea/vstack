@@ -4,6 +4,8 @@ Cross-harness package manager for AI coding tools.
 
 Author skills, agents, and hooks once. Install them into Claude Code, Cursor, OpenCode, Codex, or Pi from one CLI.
 
+This checkout is Gilad's curated Pi renderer fork. Its purpose, boundaries, and upstream relationship are in [FORK.md](FORK.md).
+
 [![Rust](https://img.shields.io/badge/Rust-%20-000000?style=flat-square&logo=rust)](./cli/Cargo.toml)
 [![Ratatui](https://img.shields.io/badge/TUI-ratatui-5D3FD3?style=flat-square)](https://ratatui.rs)
 [![Claude Code](https://img.shields.io/badge/Claude%20Code-supported-0EA5E9?style=flat-square)](#supported-tools)
