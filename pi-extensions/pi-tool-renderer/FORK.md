@@ -18,9 +18,7 @@ Read, Bash, grep, find, and ls use Pi 1.0.2 native `registerToolRenderer` resolv
 
 ## 2. Remove unfortunate necessities when another solution exists
 
-`vstack-fork-read-many-files.ts` is necessary but unwanted drift. VStack has no protocol for a personal tool to register its renderer. Keep this adapter outside upstream renderer modules. Remove it as soon as another solution lets the personal tool own its renderer while using VStack's style.
-
-The personal tool requests components through Pi's shared event bus, on `gilad:read-many-files:render`. The adapter uses upstream tree rows, path links, previews, images, and settings. It does not register or execute the tool. Without the adapter, the personal tool uses its existing renderer.
+There are no current custom-tool renderer adapters.
 
 ## 3. Minimize being behind upstream before starting work
 

@@ -48,8 +48,6 @@ The five renderers change display only. Other extensions keep their tool executi
 
 Open `/extensions:settings`, enable **Render edits/writes compactly**, then run `/reload` to opt in. This reuses upstream's settings dialog, not Pi's built-in `/settings`. The dialog also exposes renderer enable/disable, grouping, child display, and image display. It stays available when renderers are disabled. The fork does not load the package browser.
 
-The fork also renders the personal `read_many_files` tool as a grouped file list, when that tool is loaded. The heading has a bold `● Read` label. File rows show linked paths and line counts, without repeated labels. Read output settings apply to its previews and images. [Fork policy](FORK.md) records this adapter as temporary, unwanted drift.
-
 Settings remain under `vstack.extensionManager.config["@vanillagreen/pi-tool-renderer"]`. Run `pi update git:github.com/giladbarnea/vstack`, then `/reload`, to update the installed code from the fork. Do not also load a separate local copy of these renderers.
 
 ## `tool_batch`

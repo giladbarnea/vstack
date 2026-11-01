@@ -23,7 +23,7 @@ test("installing the fork exposes only the selected tool renderers", async () =>
 		expect([...resources.extensions[0].tools.keys()]).toEqual([]);
 		expect(resources.extensions[0].toolRenderers).toHaveLength(5);
 		expect([...resources.extensions[0].commands.keys()]).toEqual(["extensions:settings"]);
-		expect([...resources.extensions[0].handlers.keys()].sort()).toEqual(["agent_end", "agent_start", "session_shutdown", "session_start", "tool_execution_end", "tool_execution_start"]);
+		expect([...resources.extensions[0].handlers.keys()].sort()).toEqual(["agent_end", "agent_start", "session_start", "tool_execution_end", "tool_execution_start"]);
 		expect(loader.getSkills().skills.filter((skill) => skill.filePath.startsWith(`${repository}/`))).toEqual([]);
 		expect(loader.getPrompts().prompts).toEqual([]);
 		expect(loader.getThemes().themes).toEqual([]);

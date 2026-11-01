@@ -15,7 +15,7 @@ There are no known child forks. Tool-output-kit is a separate integration partne
 
 ## Responsibility boundary
 
-This fork owns the personal selection of renderers, their Pi integration, and the temporary adapter for tool-output-kit's `read_many_files` display. It preserves the chosen upstream appearance and settings.
+This fork owns the personal selection of renderers and their Pi integration. It preserves the chosen upstream appearance and settings.
 
 Tool execution, returned content, large-output policy, and model-context deduplication belong to their tool owners, including [tool-output-kit](/Users/giladbarnea/dev/pi-extensions/tool-output-kit/README.md). They do not belong in this renderer fork.
 

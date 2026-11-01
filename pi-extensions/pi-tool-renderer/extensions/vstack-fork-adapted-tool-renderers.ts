@@ -1,6 +1,5 @@
 import type { ExtensionAPI } from "@earendil-works/pi-coding-agent";
 
-import { registerReadManyFilesRenderer } from "./vstack-fork-read-many-files.js";
 import { openQuickSettings } from "../../pi-extension-manager/extensions/manager/quick-settings-ui.js";
 import { CONFIG_ID, recordProjectTrust, settingBoolean } from "./tool-renderer/settings.js";
 import { registerStackEvents } from "./tool-renderer/stack.js";
@@ -19,7 +18,6 @@ export default async function vstackForkAdaptedToolRenderers(pi: ExtensionAPI): 
 	if (!settingBoolean("enabled", true)) return;
 	pi.on("session_start", (_event, ctx) => recordProjectTrust(ctx));
 	registerStackEvents(pi);
-	registerReadManyFilesRenderer(pi);
 
 	const agent = await import("@earendil-works/pi-coding-agent");
 	const cwd = process.cwd();
